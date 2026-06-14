@@ -1,21 +1,2 @@
 Options -Indexes
-RewriteEngine On
-
-# Permite arquivos físicos passarem direto
-RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule ^ - [L]
-
-# Rotas da API
-RewriteRule ^auth/login$         auth/login.php          [L,QSA]
-RewriteRule ^auth/registrar$     auth/registrar.php      [L,QSA]
-RewriteRule ^usuarios/perfil$    usuarios/perfil.php     [L,QSA]
-RewriteRule ^professores$        professores/index.php   [L,QSA]
-RewriteRule ^cursos$             cursos/index.php        [L,QSA]
-RewriteRule ^aulas$              aulas/index.php         [L,QSA]
-RewriteRule ^comunicados$        comunicados/index.php   [L,QSA]
-RewriteRule ^avaliacoes/minhas$  avaliacoes/index.php    [L,QSA]
-RewriteRule ^avaliacoes$         avaliacoes/index.php    [L,QSA]
-RewriteRule ^denuncias$          denuncias/index.php     [L,QSA]
-
-# Bloqueia acesso direto ao helpers
-RewriteRule ^helpers\.php$  - [F,L]
+FallbackResource /index.php
