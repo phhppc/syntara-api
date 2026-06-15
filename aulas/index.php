@@ -1,27 +1,28 @@
 <?php
 // GET /api/aulas
 // GET /api/aulas?mes=X&ano=Y
-// GET /api/aulas?curso_id=X
+// Retorna APENAS aulas dos cursos em que o aluno está matriculado
+
 require_once __DIR__ . '/../helpers.php';
 
 setCorsHeaders();
+
 if ($_SERVER['REQUEST_METHOD'] !== 'GET')
     responder(['success' => false, 'mensagem' => 'Método não permitido.'], 405);
 
+// Exige autenticação — pega o aluno_id do token JWT
+$usuario = autenticar();
+$aluno_id = (int)$usuario['id'];
+
 $db     = getDB();
-$where  = ['1=1'];
-$params = [];
+$where  = ['m.aluno_id = ?'];  // só cursos em que está matriculado
+$params = [$aluno_id];
 
 if (!empty($_GET['mes']) && !empty($_GET['ano'])) {
     $where[]  = 'MONTH(a.data_aula) = ?';
     $where[]  = 'YEAR(a.data_aula)  = ?';
     $params[] = (int)$_GET['mes'];
     $params[] = (int)$_GET['ano'];
-}
-
-if (!empty($_GET['curso_id'])) {
-    $where[]  = 'a.curso_id = ?';
-    $params[] = (int)$_GET['curso_id'];
 }
 
 $stmt = $db->prepare(
@@ -33,9 +34,11 @@ $stmt = $db->prepare(
         c.nome  AS curso_nome,
         u.nome  AS professor_nome
      FROM aulas a
-     JOIN cursos c   ON c.id  = a.curso_id
-     JOIN usuarios u ON u.id  = c.professor_id
+     JOIN cursos c    ON c.id  = a.curso_id
+     JOIN usuarios u  ON u.id  = c.professor_id
+     JOIN matriculas m ON m.curso_id = a.curso_id
      WHERE " . implode(' AND ', $where) . "
+       AND m.status = 'ativo'
      ORDER BY a.data_aula ASC"
 );
 $stmt->execute($params);
