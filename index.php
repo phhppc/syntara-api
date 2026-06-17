@@ -4,6 +4,7 @@ $uri = trim($uri, '/');
 
 $routes = [
     'auth/login'        => __DIR__ . '/auth/login.php',
+    'usuarios/senha' => __DIR__ . '/usuarios/senha.php',
     'auth/registrar'    => __DIR__ . '/auth/registrar.php',
     'usuarios/perfil'   => __DIR__ . '/usuarios/perfil.php',
     'professores'       => __DIR__ . '/professores/index.php',
